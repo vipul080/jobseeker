@@ -25,4 +25,6 @@ public interface JobRepository extends JpaRepository<Job, Long> {
                      @Param("remoteOnly") boolean remoteOnly);
 
     List<Job> findBySavedTrueOrderByPostedOnDesc();
+
+    List<Job> findBySource(String source);
 }

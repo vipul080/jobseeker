@@ -5,11 +5,12 @@ import com.jobseeker.model.Job;
 import com.jobseeker.model.JobType;
 import com.jobseeker.repo.ApplicationRepository;
 import com.jobseeker.repo.JobRepository;
-import jakarta.validation.Valid;
+import jakarta.validation.groups.Default;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -29,7 +30,8 @@ public class JobController {
     /** Keep ids server-assigned: otherwise /jobs/{id}/apply would bind the job id onto the new Application. */
     @InitBinder
     void disallowId(WebDataBinder binder) {
-        binder.setDisallowedFields("id", "saved");
+        binder.setDisallowedFields("id", "saved", "source", "externalId", "applyUrl",
+                "companyLogo", "salaryText", "descriptionHtml");
     }
 
     @GetMapping("/")
@@ -64,11 +66,15 @@ public class JobController {
 
     @PostMapping("/jobs/{id}/apply")
     public String apply(@PathVariable Long id,
-                        @Valid @ModelAttribute("application") Application application,
+                        @Validated({Application.DirectApply.class, Default.class})
+                        @ModelAttribute("application") Application application,
                         BindingResult result,
                         Model model,
                         RedirectAttributes flash) {
         Job job = find(id);
+        if (job.isExternal()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Apply to external jobs on the source site");
+        }
         if (result.hasErrors()) {
             model.addAttribute("job", job);
             model.addAttribute("alreadyApplied", applications.existsByJobId(id));
@@ -77,6 +83,19 @@ public class JobController {
         application.setJob(job);
         applications.save(application);
         flash.addFlashAttribute("message", "Application sent to " + job.getCompany() + ".");
+        return "redirect:/applications";
+    }
+
+    /** For external listings: you apply on the source site, then record it here to track it. */
+    @PostMapping("/jobs/{id}/track")
+    public String track(@PathVariable Long id, RedirectAttributes flash) {
+        Job job = find(id);
+        if (!applications.existsByJobId(id)) {
+            Application application = new Application();
+            application.setJob(job);
+            applications.save(application);
+        }
+        flash.addFlashAttribute("message", "Tracking your application to " + job.getCompany() + ".");
         return "redirect:/applications";
     }
 
@@ -103,7 +122,7 @@ public class JobController {
     }
 
     @PostMapping("/jobs")
-    public String create(@Valid @ModelAttribute("job") Job job, BindingResult result,
+    public String create(@Validated @ModelAttribute("job") Job job, BindingResult result,
                          Model model, RedirectAttributes flash) {
         if (job.getSalaryMin() != null && job.getSalaryMax() != null
                 && job.getSalaryMin() > job.getSalaryMax()) {

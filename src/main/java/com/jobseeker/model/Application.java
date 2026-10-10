@@ -14,11 +14,14 @@ public class Application {
     @ManyToOne(optional = false)
     private Job job;
 
-    @NotBlank
+    /** Validation group for applications submitted through this app (external ones are just tracked). */
+    public interface DirectApply {}
+
+    @NotBlank(groups = DirectApply.class)
     private String fullName;
 
-    @NotBlank
-    @Email
+    @NotBlank(groups = DirectApply.class)
+    @Email(groups = DirectApply.class)
     private String email;
 
     private String phone;

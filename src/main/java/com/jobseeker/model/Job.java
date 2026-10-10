@@ -40,6 +40,25 @@ public class Job {
 
     private boolean saved;
 
+    /** Where the listing came from, e.g. "Remotive". Null means it was posted in this app. */
+    private String source;
+
+    private String externalId;
+
+    /** Link to the original listing; external jobs are applied to there. */
+    @Column(length = 1000)
+    private String applyUrl;
+
+    @Column(length = 1000)
+    private String companyLogo;
+
+    /** Free-text salary from external sources, which don't give structured ranges. */
+    private String salaryText;
+
+    /** Sanitized HTML description from external sources; {@link #description} holds the plain text for search. */
+    @Lob
+    private String descriptionHtml;
+
     public Job() {}
 
     public Job(String title, String company, String location, JobType type, boolean remote,
@@ -55,7 +74,12 @@ public class Job {
         this.postedOn = postedOn;
     }
 
+    public boolean isExternal() {
+        return source != null;
+    }
+
     public String getSalaryRange() {
+        if (salaryText != null && !salaryText.isBlank()) return salaryText;
         if (salaryMin == null && salaryMax == null) return "Not disclosed";
         if (salaryMax == null) return "₹" + lakhs(salaryMin) + "+ LPA";
         if (salaryMin == null) return "Up to ₹" + lakhs(salaryMax) + " LPA";
@@ -89,4 +113,16 @@ public class Job {
     public void setPostedOn(LocalDate postedOn) { this.postedOn = postedOn; }
     public boolean isSaved() { return saved; }
     public void setSaved(boolean saved) { this.saved = saved; }
+    public String getSource() { return source; }
+    public void setSource(String source) { this.source = source; }
+    public String getExternalId() { return externalId; }
+    public void setExternalId(String externalId) { this.externalId = externalId; }
+    public String getApplyUrl() { return applyUrl; }
+    public void setApplyUrl(String applyUrl) { this.applyUrl = applyUrl; }
+    public String getCompanyLogo() { return companyLogo; }
+    public void setCompanyLogo(String companyLogo) { this.companyLogo = companyLogo; }
+    public String getSalaryText() { return salaryText; }
+    public void setSalaryText(String salaryText) { this.salaryText = salaryText; }
+    public String getDescriptionHtml() { return descriptionHtml; }
+    public void setDescriptionHtml(String descriptionHtml) { this.descriptionHtml = descriptionHtml; }
 }

@@ -9,7 +9,8 @@
     <div class="detail-grid">
         <section class="card">
             <div class="detail-head">
-                <div>
+                <div th:replace="~{fragments/layout :: logo(${job}, 'logo logo-lg')}"></div>
+                <div class="grow">
                     <h1 th:text="${job.title}"></h1>
                     <div class="muted" th:text="${job.company} + ' · ' + ${job.location}"></div>
                 </div>
@@ -24,10 +25,30 @@
                 <span class="tag tag-plain" th:text="'Posted ' + ${#temporals.format(job.postedOn, 'd MMM yyyy')}"></span>
             </div>
             <h2>About the role</h2>
-            <p class="description" th:text="${job.description}"></p>
+            <div class="description rich" th:if="${job.descriptionHtml}" th:utext="${job.descriptionHtml}"></div>
+            <p class="description" th:unless="${job.descriptionHtml}" th:text="${job.description}"></p>
+            <p class="attribution" th:if="${job.external}">
+                Listing from <a th:href="${job.applyUrl}" target="_blank" rel="noopener" th:text="${job.source}"></a>.
+                <a th:href="${job.applyUrl}" target="_blank" rel="noopener">View the original posting ↗</a>
+            </p>
         </section>
 
-        <section class="card">
+        <section class="card" th:if="${job.external}">
+            <h2>Apply</h2>
+            <p class="muted">This job is listed on <strong th:text="${job.source}"></strong>. Apply on their site, then mark it as applied here to track it.</p>
+            <div class="form">
+                <a class="btn center" th:href="${job.applyUrl}" target="_blank" rel="noopener"
+                   th:text="'Apply on ' + ${job.source} + ' ↗'"></a>
+                <p class="notice" th:if="${alreadyApplied}">
+                    You're tracking this one. <a th:href="@{/applications}">View it</a>
+                </p>
+                <form th:unless="${alreadyApplied}" th:action="@{/jobs/{id}/track(id=${job.id})}" method="post">
+                    <button class="btn btn-ghost full" type="submit">✓ Mark as applied</button>
+                </form>
+            </div>
+        </section>
+
+        <section class="card" th:unless="${job.external}">
             <h2>Apply</h2>
             <p class="notice" th:if="${alreadyApplied}">
                 You've already applied here. <a th:href="@{/applications}">Track it</a>

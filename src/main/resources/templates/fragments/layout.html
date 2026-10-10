@@ -19,7 +19,13 @@
     </div>
 </header>
 <div th:fragment="flash" th:if="${message}" class="flash" th:text="${message}"></div>
+<span th:fragment="logo(job, cls)" th:class="${cls}" aria-hidden="true">
+    <span th:text="${#strings.toUpperCase(#strings.substring(job.company, 0, 1))}"></span>
+    <img th:if="${job.companyLogo}" th:src="${job.companyLogo}" alt="" loading="lazy"
+         referrerpolicy="no-referrer" onerror="this.remove()">
+</span>
 <article th:fragment="card(job)" class="card job-card">
+    <div th:replace="~{fragments/layout :: logo(${job}, 'logo')}"></div>
     <div class="job-card-main">
         <a class="job-title" th:href="@{/jobs/{id}(id=${job.id})}" th:text="${job.title}"></a>
         <div class="muted" th:text="${job.company} + ' · ' + ${job.location}"></div>
@@ -27,6 +33,7 @@
             <span class="tag" th:text="${job.type.label}"></span>
             <span class="tag tag-green" th:if="${job.remote}">Remote</span>
             <span class="tag tag-plain" th:text="${job.salaryRange}"></span>
+            <span class="tag tag-source" th:if="${job.external}" th:text="'via ' + ${job.source}"></span>
         </div>
     </div>
     <div class="job-card-side">
