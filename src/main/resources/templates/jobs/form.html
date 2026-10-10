@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Post a job')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav('')}"></header>
+<main class="container narrow">
+    <h1>Post a job</h1>
+    <form class="card form" th:action="@{/jobs}" th:object="${job}" method="post">
+        <label>Job title *
+            <input th:field="*{title}" required>
+            <span class="error" th:errors="*{title}"></span>
+        </label>
+        <div class="row">
+            <label>Company *
+                <input th:field="*{company}" required>
+                <span class="error" th:errors="*{company}"></span>
+            </label>
+            <label>Location *
+                <input th:field="*{location}" required>
+                <span class="error" th:errors="*{location}"></span>
+            </label>
+        </div>
+        <div class="row">
+            <label>Type
+                <select th:field="*{type}">
+                    <option th:each="t : ${types}" th:value="${t}" th:text="${t.label}"></option>
+                </select>
+            </label>
+            <label class="check inline"><input type="checkbox" th:field="*{remote}"> Remote friendly</label>
+        </div>
+        <div class="row">
+            <label>Min salary (₹ per year)
+                <input type="number" min="0" th:field="*{salaryMin}">
+                <span class="error" th:errors="*{salaryMin}"></span>
+            </label>
+            <label>Max salary (₹ per year)
+                <input type="number" min="0" th:field="*{salaryMax}">
+                <span class="error" th:errors="*{salaryMax}"></span>
+            </label>
+        </div>
+        <label>Description *
+            <textarea th:field="*{description}" rows="8" required></textarea>
+            <span class="error" th:errors="*{description}"></span>
+        </label>
+        <button class="btn" type="submit">Publish job</button>
+    </form>
+</main>
+</body>
+</html>

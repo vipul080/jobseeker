@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head(${job.title})}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav('jobs')}"></header>
+<main class="container">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+    <a class="back" th:href="@{/jobs}">← All jobs</a>
+    <div class="detail-grid">
+        <section class="card">
+            <div class="detail-head">
+                <div>
+                    <h1 th:text="${job.title}"></h1>
+                    <div class="muted" th:text="${job.company} + ' · ' + ${job.location}"></div>
+                </div>
+                <form th:action="@{/jobs/{id}/save(id=${job.id})}" method="post">
+                    <button class="btn btn-ghost" type="submit" th:text="${job.saved} ? '★ Saved' : '☆ Save'"></button>
+                </form>
+            </div>
+            <div class="tags">
+                <span class="tag" th:text="${job.type.label}"></span>
+                <span class="tag tag-green" th:if="${job.remote}">Remote</span>
+                <span class="tag tag-plain" th:text="${job.salaryRange}"></span>
+                <span class="tag tag-plain" th:text="'Posted ' + ${#temporals.format(job.postedOn, 'd MMM yyyy')}"></span>
+            </div>
+            <h2>About the role</h2>
+            <p class="description" th:text="${job.description}"></p>
+        </section>
+
+        <section class="card">
+            <h2>Apply</h2>
+            <p class="notice" th:if="${alreadyApplied}">
+                You've already applied here. <a th:href="@{/applications}">Track it</a>
+            </p>
+            <form th:action="@{/jobs/{id}/apply(id=${job.id})}" th:object="${application}" method="post" class="form">
+                <label>Full name *
+                    <input th:field="*{fullName}" required>
+                    <span class="error" th:errors="*{fullName}"></span>
+                </label>
+                <label>Email *
+                    <input type="email" th:field="*{email}" required>
+                    <span class="error" th:errors="*{email}"></span>
+                </label>
+                <label>Phone
+                    <input type="tel" th:field="*{phone}">
+                </label>
+                <label>Résumé link
+                    <input type="url" th:field="*{resumeLink}" placeholder="https://drive.google.com/…">
+                </label>
+                <label>Cover letter
+                    <textarea th:field="*{coverLetter}" rows="6" placeholder="Why you're a great fit"></textarea>
+                </label>
+                <button class="btn" type="submit">Submit application</button>
+            </form>
+        </section>
+    </div>
+</main>
+</body>
+</html>

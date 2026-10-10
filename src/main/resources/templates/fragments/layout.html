@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="head(title)">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${title} + ' · JobSeeker'">JobSeeker</title>
+    <link rel="stylesheet" th:href="@{/style.css}">
+</head>
+<body>
+<header th:fragment="nav(active)" class="nav">
+    <div class="container nav-inner">
+        <a class="brand" th:href="@{/jobs}">Job<span>Seeker</span></a>
+        <nav>
+            <a th:href="@{/jobs}" th:classappend="${active == 'jobs'} ? 'active'">Find jobs</a>
+            <a th:href="@{/saved}" th:classappend="${active == 'saved'} ? 'active'">Saved</a>
+            <a th:href="@{/applications}" th:classappend="${active == 'applications'} ? 'active'">My applications</a>
+            <a th:href="@{/jobs/new}" class="btn btn-small">Post a job</a>
+        </nav>
+    </div>
+</header>
+<div th:fragment="flash" th:if="${message}" class="flash" th:text="${message}"></div>
+<article th:fragment="card(job)" class="card job-card">
+    <div class="job-card-main">
+        <a class="job-title" th:href="@{/jobs/{id}(id=${job.id})}" th:text="${job.title}"></a>
+        <div class="muted" th:text="${job.company} + ' · ' + ${job.location}"></div>
+        <div class="tags">
+            <span class="tag" th:text="${job.type.label}"></span>
+            <span class="tag tag-green" th:if="${job.remote}">Remote</span>
+            <span class="tag tag-plain" th:text="${job.salaryRange}"></span>
+        </div>
+    </div>
+    <div class="job-card-side">
+        <span class="muted small" th:text="${#temporals.format(job.postedOn, 'd MMM')}"></span>
+        <span class="star" th:if="${job.saved}" title="Saved">★</span>
+    </div>
+</article>
+</body>
+</html>

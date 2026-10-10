@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('My applications')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav('applications')}"></header>
+<main class="container">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+    <h1>My applications</h1>
+    <div class="stats">
+        <div class="card stat" th:each="entry : ${counts}">
+            <span class="stat-num" th:text="${entry.value}"></span>
+            <span class="status" th:classappend="'status-' + ${#strings.toLowerCase(entry.key)}" th:text="${entry.key.label}"></span>
+        </div>
+    </div>
+    <div class="card app" th:each="app : ${applications}">
+        <div class="app-head">
+            <div>
+                <a class="job-title" th:href="@{/jobs/{id}(id=${app.job.id})}" th:text="${app.job.title}"></a>
+                <div class="muted" th:text="${app.job.company} + ' · applied ' + ${#temporals.format(app.appliedOn, 'd MMM yyyy')}"></div>
+            </div>
+            <span class="status" th:classappend="'status-' + ${#strings.toLowerCase(app.status)}" th:text="${app.status.label}"></span>
+        </div>
+        <form class="app-edit" th:action="@{/applications/{id}(id=${app.id})}" method="post">
+            <select name="status">
+                <option th:each="s : ${statuses}" th:value="${s}" th:text="${s.label}" th:selected="${s == app.status}"></option>
+            </select>
+            <input name="notes" th:value="${app.notes}" placeholder="Notes: interview date, recruiter name…">
+            <button class="btn btn-small" type="submit">Update</button>
+        </form>
+        <form th:action="@{/applications/{id}/delete(id=${app.id})}" method="post"
+              onsubmit="return confirm('Withdraw this application?')">
+            <button class="link-danger" type="submit">Withdraw</button>
+        </form>
+    </div>
+    <div class="card empty" th:if="${#lists.isEmpty(applications)}">
+        You haven't applied anywhere yet. <a th:href="@{/jobs}">Find a job</a>
+    </div>
+</main>
+</body>
+</html>

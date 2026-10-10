@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Saved jobs')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav('saved')}"></header>
+<main class="container">
+    <h1>Saved jobs</h1>
+    <th:block th:each="job : ${jobs}"><div th:replace="~{fragments/layout :: card(${job})}"></div></th:block>
+    <div class="card empty" th:if="${#lists.isEmpty(jobs)}">
+        Nothing saved yet. Tap <strong>☆ Save</strong> on any job to keep it here. <a th:href="@{/jobs}">Browse jobs</a>
+    </div>
+</main>
+</body>
+</html>

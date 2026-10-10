@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Find jobs')}"></head>
+<body>
+<header th:replace="~{fragments/layout :: nav('jobs')}"></header>
+<main class="container">
+    <div th:replace="~{fragments/layout :: flash}"></div>
+    <h1>Find your next role</h1>
+    <form class="card search" th:action="@{/jobs}" method="get">
+        <input type="search" name="q" th:value="${q}" placeholder="Title, company or keyword">
+        <input type="text" name="location" th:value="${location}" placeholder="Location">
+        <select name="type">
+            <option value="">Any type</option>
+            <option th:each="t : ${types}" th:value="${t}" th:text="${t.label}" th:selected="${t == type}"></option>
+        </select>
+        <label class="check"><input type="checkbox" name="remote" value="true" th:checked="${remote}"> Remote only</label>
+        <button class="btn" type="submit">Search</button>
+    </form>
+    <p class="muted" th:text="${#lists.size(jobs)} + (${#lists.size(jobs)} == 1 ? ' job' : ' jobs') + ' found'"></p>
+    <th:block th:each="job : ${jobs}"><div th:replace="~{fragments/layout :: card(${job})}"></div></th:block>
+    <div class="card empty" th:if="${#lists.isEmpty(jobs)}">
+        No jobs match those filters. <a th:href="@{/jobs}">Clear filters</a>
+    </div>
+</main>
+</body>
+</html>
