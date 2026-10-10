@@ -1,6 +1,6 @@
 # JobSeeker
 
-A job search web app built with Java 21 and Spring Boot.
+A job search web app built with Java 17+ and Spring Boot.
 
 ## Features
 - **Browse & search jobs**: filter by keyword, location, job type and remote.
@@ -13,7 +13,7 @@ A job search web app built with Java 21 and Spring Boot.
 Spring Boot (Web MVC, Data JPA, Validation) · Thymeleaf · H2 database (file-based, stored in `./data`).
 
 ## Run it
-Requires Java 21+. No Maven install needed; the wrapper downloads it.
+Requires Java 17+. No Maven install needed; the wrapper downloads it.
 
 ```bash
 ./mvnw spring-boot:run
